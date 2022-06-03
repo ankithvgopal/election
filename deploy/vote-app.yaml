@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: vote-app
+    app.kubernetes.io/component: vote-app
+    app.kubernetes.io/instance: vote-app
+  name: vote-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      deployment: vote-app
+  template:
+    metadata:
+      labels:
+        deployment: vote-app
+    spec:
+      containers:
+        - name: vote-app
+          image: ankithvgopal/election:latest
+          ports:
+            - containerPort: 8081
+              protocol: TCP
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: vote-app
+    app.kubernetes.io/component: vote-app
+    app.kubernetes.io/instance: vote-app
+  name: vote-app
+spec:
+  ports:
+    - name: 8081-tcp
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+      nodePort: 30000
+  selector:
+    deployment: vote-app
+  type: NodePort
